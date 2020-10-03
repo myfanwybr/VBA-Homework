@@ -1,0 +1,61 @@
+Sub alphabetical_testing():
+'set variables
+Dim ticker As String
+Dim opening_value As Double
+Dim closing_value As Double
+Dim change As Double
+Dim percent_change As Double
+Dim total_volume As Double
+Dim i As Double
+Dim last_row As Double
+Dim j As Long
+' For WS
+'add ws. before Cells
+For Each ws In Worksheets
+    last_row = ws.Cells(Rows.Count, "A").End(xlUp).Row
+    opening_value = ws.Cells(2, 3).Value
+    total_volume = 0
+    j = 2
+    
+    
+'start to loop
+    For i = 2 To last_row
+    'if value changes then
+        If ws.Cells(i, 1).Value <> ws.Cells(i + 1, 1) Then
+    'calculate values (yearly change etc.)
+        total_volume = total_volume + ws.Cells(i, 7).Value
+        ticker = ws.Cells(i, 1).Value
+        closing_value = ws.Cells(i, 6).Value
+        change = closing_value - opening_value
+            If opening_value > 0 Then
+                percent_change = (change / opening_value) * 100
+            Else: percent_change = 0
+            End If
+
+    'output value for first ticker
+        ws.Cells(j, 9).Value = ticker
+        ws.Cells(j, 10).Value = change
+        ws.Cells(j, 11).Value = Round(percent_change, 2)
+        ws.Cells(j, 12).Value = total_volume
+    'colour conditioning
+            If ws.Cells(j, 10).Value > 0 Then
+                ws.Cells(j, 10).Interior.ColorIndex = 4
+            ElseIf ws.Cells(j, 10).Value < 0 Then
+                ws.Cells(j, 10).Interior.ColorIndex = 3
+            End If
+    'reset variables
+        opening_value = ws.Cells(i + 1, 3).Value
+        total_volume = 0
+        closing_value = 0
+        j = j + 1
+    'Else statement
+        Else: total_volume = total_volume + ws.Cells(i, 7).Value
+        End If
+    Next i
+    ws.Cells(1, 9).Value = "Ticker"
+    ws.Cells(1, 10).Value = "Yearly Change"
+    ws.Cells(1, 11).Value = "Percent Change"
+    ws.Cells(1, 12).Value = "Total Stock Volume"
+    'Next WS
+Next ws
+End Sub
